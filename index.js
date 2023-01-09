@@ -6,6 +6,7 @@ const app = express();
 const createUser = require("./apis/createUser");
 const locationStamp = require("./apis/locationStamp");
 const { getAllStamp, getStamp } = require("./apis/getStamp");
+const Login = require("./apis/login");
 
 app.use(cors({ "access-control-allow-origin": "*" })); //yha per client side ka url dalna hai bss
 app.use(express.json({ limit: "5mb", extended: true }));
@@ -15,6 +16,10 @@ app.use(
 
 app.get("/", (req, res) => {
   res.send("server Started");
+});
+app.use((req) => {
+  console.log(req.url);
+  req.next();
 });
 
 app.post("/createUser", async (req, res) => {
@@ -34,6 +39,11 @@ app.get("/getAllStamp", async (req, res) => {
 });
 app.post("/getStamp", async (req, res) => {
   const response = await getStamp(req.body);
+  console.log(response);
+  res.send(response);
+});
+app.post("/login", async (req, res) => {
+  const response = await Login(req.body);
   console.log(response);
   res.send(response);
 });

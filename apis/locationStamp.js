@@ -1,6 +1,7 @@
 const { writeDb } = require("../dbUtil");
 
 async function locationStamp(data) {
+  console.log(data);
   const { employee_id, latitude, longitude } = data;
   const db_table = "data_tracing";
 
@@ -24,7 +25,7 @@ async function locationStamp(data) {
     console.log("create user Error : " + e);
     return {
       flag: false,
-      message: `Error : ${e.message}`,
+      message: `Error : ${e}`,
     };
   }
 }
