@@ -29,7 +29,7 @@ async function getAllStamp() {
 
 async function getStamp({ employee_id }) {
   try {
-    const stamp = await readDb(db_table, {
+    const stamp = await readDbs(db_table, {
       field: "employee_id",
       value: employee_id,
     });
