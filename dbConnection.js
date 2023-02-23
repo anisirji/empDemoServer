@@ -9,7 +9,8 @@ const pool = mysql.createPool({
 
 const check = async () => {
   try {
-    const b = await pool.execute(`SELECT * FROM data_employee`);
+    const b = await pool.execute(`SELECT * FROM meta_tasks`);
+    // console.log(b[0]);
     console.log(
       "...🔥\n.....🔥\n......🔥\nMySql Database Server Connected Successfully"
     );

@@ -7,7 +7,7 @@ async function writeDb(table, fields, values) {
   )}) VALUES (${convertToSql(values, "c")})`;
 
   console.log("inserting data in table: " + table);
-  //   console.log(sql);
+  console.log(sql, values);
 
   try {
     const f = await pool.execute(sql, values);
@@ -17,6 +17,7 @@ async function writeDb(table, fields, values) {
       response: f,
     };
   } catch (e) {
+    console.log(`encountered error: ${e.message}`);
     return {
       flag: false,
       message: `encountered error: ${e.message}`,
@@ -44,6 +45,7 @@ async function readDbs(table, condition) {
       };
     }
   } catch (e) {
+    console.log(`encountered error: ${e.message}`);
     return {
       flag: false,
       message: `encountered error: ${e.message}`,
@@ -70,6 +72,7 @@ async function readDb(table) {
       };
     }
   } catch (e) {
+    console.log(`encountered error: ${e.message}`);
     return {
       flag: false,
       message: `encountered error: ${e.message}`,

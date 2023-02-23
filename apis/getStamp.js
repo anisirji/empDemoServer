@@ -1,7 +1,8 @@
 const { readDb, readDbs } = require("../dbUtil");
-const db_table = "data_tracing";
+const db_table = "txn_geolocation";
 
 async function getAllStamp() {
+  console.log(db_table);
   try {
     const stamp = await readDb(db_table);
     console.log(stamp);
