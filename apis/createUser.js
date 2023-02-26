@@ -17,10 +17,10 @@ async function createUser(data) {
   const db_table = "data_employee";
 
   try {
-    // const id = `${Math.floor(Math.random() * 100000)}-${employee_name.slice(
-    //   0,
-    //   4
-    // )}`;
+    const id = `${Math.floor(Math.random() * 100000)}-${employee_name.slice(
+      0,
+      4
+    )}`;
     const fields = [
       "entry_by",
       "entry_date",
@@ -42,7 +42,7 @@ async function createUser(data) {
       mod_by,
       mod_date,
       active,
-      employee_mobile,
+      id,
       employee_name,
       employee_mobile,
       employee_email,

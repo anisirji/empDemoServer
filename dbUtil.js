@@ -94,4 +94,10 @@ function convertToSql(data, l) {
   return ff;
 }
 
-module.exports = { writeDb, readDb, readDbs };
+//function to get reponse from sql quary
+async function quary({ quary }) {
+  const response = await pool.execute(quary);
+  return response;
+}
+
+module.exports = { writeDb, readDb, readDbs, quary };
