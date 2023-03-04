@@ -1,3 +1,4 @@
+const { response } = require("express");
 const pool = require("./dbConnection");
 
 async function writeDb(table, fields, values) {
@@ -95,10 +96,9 @@ function convertToSql(data, l) {
 }
 
 //function to get reponse from sql quary
-async function quary({ quary }) {
+async function runQuary(quary) {
   try {
     const response = await pool.execute(quary);
-    console.log(response);
     return response;
   } catch (e) {
     console.log(e);
@@ -130,4 +130,4 @@ async function updateDb(table, updates, condition) {
   }
 }
 
-module.exports = { writeDb, readDb, readDbs, quary, updateDb };
+module.exports = { writeDb, readDb, readDbs, runQuary, updateDb };
