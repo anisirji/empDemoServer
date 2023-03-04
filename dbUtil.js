@@ -96,8 +96,38 @@ function convertToSql(data, l) {
 
 //function to get reponse from sql quary
 async function quary({ quary }) {
-  const response = await pool.execute(quary);
-  return response;
+  try {
+    const response = await pool.execute(quary);
+    console.log(response);
+    return response;
+  } catch (e) {
+    console.log(e);
+    return { flag: false, message: `Error Found ${e.message}` };
+  }
 }
 
-module.exports = { writeDb, readDb, readDbs, quary };
+//async function to update value
+async function updateDb(table, updates, condition) {
+  let updts = "";
+  for (const key in updates) {
+    updts += `${key} = '${updates[key]}',`;
+  }
+  updts = updts.substring(0, updts.length - 1);
+  console.log(updts);
+  const sql = `UPDATE ${table} SET ${updts} WHERE ${condition.unique} = '${condition.value}'`;
+  console.log(sql);
+  try {
+    const response = await pool.execute(sql);
+    return {
+      flag: true,
+      message: "data updated",
+    };
+  } catch (e) {
+    return {
+      flag: false,
+      message: `Error ${e}`,
+    };
+  }
+}
+
+module.exports = { writeDb, readDb, readDbs, quary, updateDb };

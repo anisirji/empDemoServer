@@ -18,6 +18,7 @@ const {
   getAllPunchInRequests,
   getSinglePunchInRequest,
 } = require("./apis/getValues");
+const { updateDb } = require("./dbUtil");
 
 app.use(cors({ "access-control-allow-origin": "*" })); //yha per client side ka url dalna hai bss
 app.use(express.json({ limit: "5mb", extended: true }));
@@ -104,6 +105,24 @@ app.get("/getPunchInRequest", async (req, res) => {
 app.get("/getPunchInRequest/:id", async (req, res) => {
   const response = await getSinglePunchInRequest({ id: req.params.id });
   console.log(response);
+  res.send(response);
+});
+
+app.post("/updateLeaveReq", async (req, res) => {
+  const response = await updateDb(
+    `txn_leave_application`,
+    { status: req.body.status },
+    { unique: "id", value: req.body.id }
+  );
+  res.send(response);
+});
+
+app.post("/updatePunchInReq", async (req, res) => {
+  const response = await updateDb(
+    `txn_re_punch_in`,
+    { status: req.body.status },
+    { unique: "id", value: req.body.id }
+  );
   res.send(response);
 });
 

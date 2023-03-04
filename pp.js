@@ -38,3 +38,27 @@
 //      "holiday_to_date":"2021-12-2",
 //      "holiday_reason":"none"
 // }
+
+//UpdateLeaveRequest
+//URL: http://localhost:3002/updateLeaveReq
+// BODY:
+//{
+//     "id":"43217-2023-02-22 13:02:16",
+//     "status":"Denied"
+// }
+
+//Update REiPUNCHIN REQUEST
+//URL: http://localhost:3002/updatePunchInReq
+//BODY:
+// {
+//     "id":"punchIn43217-2023-02-22 13:45:18",
+//     "status":"Denied"
+// }
+
+//Ignore This (Update Fromat)
+// table = `txn_leave_application`;
+// updates = {
+//   reason_for_leave: "ESSEHI",
+//   status: "Accepted",
+// };
+// condition = { unique: "id", value: "43217-2023-02-22 13:02:16" };
