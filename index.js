@@ -111,7 +111,7 @@ app.get("/getPunchInRequest/:id", async (req, res) => {
 app.post("/updateLeaveReq", async (req, res) => {
   const response = await updateDb(
     `txn_leave_application`,
-    { status: req.body.status },
+    { status: req.body.status, remarks: req.body.remarks },
     { unique: "id", value: req.body.id }
   );
   res.send(response);
@@ -120,10 +120,21 @@ app.post("/updateLeaveReq", async (req, res) => {
 app.post("/updatePunchInReq", async (req, res) => {
   const response = await updateDb(
     `txn_re_punch_in`,
-    { status: req.body.status },
+    { status: req.body.status, remarks: req.body.remarks },
     { unique: "id", value: req.body.id }
   );
   res.send(response);
+});
+
+app.get("/tAction/:employee_id", async (req, res) => {
+  const punchIn = await runQuary(
+    `SELECT timestamp FROM txn_geolocation WHERE employee_id = '${req.params.employee_id}' AND flag_value = 'PUNCH-IN' ORDER BY timestamp DESC LIMIT 1;`
+  );
+  const punchOut = await runQuary(
+    `SELECT timestamp FROM txn_geolocation WHERE employee_id = '${req.params.employee_id}' AND flag_value = 'PUNCH-OUT' ORDER BY timestamp DESC LIMIT 1;`
+  );
+
+  const response = { last_punchIn: punchIn, last_punchOut: punchOut };
 });
 
 //Server start

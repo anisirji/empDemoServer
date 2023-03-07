@@ -2,7 +2,7 @@ const { writeDb } = require("../dbUtil");
 
 async function punchInRequest(application) {
   try {
-    const { employee_id, reason } = application;
+    const { employee_id, reason, latitude, longitude, timestamp } = application;
     const id = `punchIn${employee_id}-${new Date()
       .toISOString()
       .slice(0, 19)
@@ -13,19 +13,23 @@ async function punchInRequest(application) {
       "employee_id",
       "reason",
       "status",
-      "entry_date",
       "activity",
+      "entry_latitude",
+      "entry_longitude",
+      "entry_date",
     ];
     const value = [
       id,
       employee_id,
       reason,
       "Active",
-      new Date().toISOString().slice(0, 19).replace("T", " "),
       `Requested Re-Punch-In, on ${new Date()
         .toISOString()
         .slice(0, 19)
         .replace("T", " ")}~`,
+      latitude,
+      longitude,
+      timestamp,
     ];
 
     const putData = await writeDb(table, fields, value);
