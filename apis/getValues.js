@@ -53,26 +53,53 @@ async function getSingleLeaveApplicaion({ id }) {
   }
 }
 
-async function getAllPunchInRequests() {
+async function getAllPunchInRequests(status) {
   const table = "txn_re_punch_in";
-  try {
-    const request = await readDb(table);
-    return request;
-  } catch (e) {
-    return {
-      flag: false,
-      message: `error Occured ${e.message}`,
-    };
+  if (status) {
+    try {
+      const request = await readDb(table);
+      return request;
+    } catch (e) {
+      return {
+        flag: false,
+        message: `error Occured ${e.message}`,
+      };
+    }
+  } else {
+    try {
+      status = status.toUpperCase();
+      console.log(status);
+      const request = await readDbs(table, { field: "status", value: status });
+      return request;
+    } catch (e) {
+      return {
+        flag: false,
+        message: `error Occured ${e.message}`,
+      };
+    }
   }
 }
 
 async function getSinglePunchInRequest({ id }) {
   const table = "txn_re_punch_in";
   try {
-    const request = await readDbs(table, {
+    let request = await readDbs(table, {
       field: "id",
       value: id,
     });
+    const user = await readDbs("data_employee", {
+      field: "id",
+      value: request.data[0]["employee_id"],
+    });
+    // console.log(user);
+    const infos = user.data[0];
+    const data = request.data[0];
+    // console.log("data", data);
+    request = {
+      ...data,
+      employee_name: infos["employee_name"],
+      employee_mobile: infos["employee_mobile"],
+    };
     return request;
   } catch (e) {
     return {

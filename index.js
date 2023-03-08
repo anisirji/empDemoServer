@@ -18,7 +18,7 @@ const {
   getAllPunchInRequests,
   getSinglePunchInRequest,
 } = require("./apis/getValues");
-const { updateDb } = require("./dbUtil");
+const { updateDb, runQuary } = require("./dbUtil");
 
 app.use(cors({ "access-control-allow-origin": "*" })); //yha per client side ka url dalna hai bss
 app.use(express.json({ limit: "5mb", extended: true }));
@@ -101,6 +101,11 @@ app.get("/getPunchInRequest", async (req, res) => {
   console.log(response);
   res.send(response);
 });
+app.get("/getPunchInRequest/:status", async (req, res) => {
+  const response = await getAllPunchInRequests(req.params.status);
+  console.log(response);
+  res.send(response);
+});
 
 app.get("/getPunchInRequest/:id", async (req, res) => {
   const response = await getSinglePunchInRequest({ id: req.params.id });
@@ -134,7 +139,15 @@ app.get("/tAction/:employee_id", async (req, res) => {
     `SELECT timestamp FROM txn_geolocation WHERE employee_id = '${req.params.employee_id}' AND flag_value = 'PUNCH-OUT' ORDER BY timestamp DESC LIMIT 1;`
   );
 
-  const response = { last_punchIn: punchIn, last_punchOut: punchOut };
+  const response = {
+    last_punchIn: punchIn[0][0].timestamp,
+    last_punchOut: punchOut[0][0].timestamp,
+  };
+  console.log(response);
+  res.send({
+    flag: true,
+    data: response,
+  });
 });
 
 //Server start
