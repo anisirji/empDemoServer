@@ -193,12 +193,14 @@ app.get("/today-attendance-list", async (req, res) => {
   });
 });
 
-app.get("/live-location", async (req, res) => {
+app.get("/live-location/:id", async (req, res) => {
   const response = await runQuary(
-    `SELECT A.employee_id, B.employee_name, DATE_FORMAT(A.timestamp, '%d-%m-%Y %h:%i%S %p') AS timestamp_, A.latitude, A.longitude,A.flag_value FROM txn_geolocation AS A JOIN data_employee AS B ON A.employee_id = B.id WHERE DATE_FORMAT(timestamp, "%Y-%m-%d") = CURRENT_DATE() ORDER BY timestamp;`
+    `SELECT A.employee_id, B.employee_name, DATE_FORMAT(A.timestamp, '%d-%m-%Y %h:%i%S %p') AS timestamp_, A.latitude, A.longitude,A.flag_value FROM txn_geolocation AS A JOIN data_employee AS B ON A.employee_id = B.id WHERE DATE_FORMAT(timestamp, "%Y-%m-%d") = CURRENT_DATE() AND employee_id = ${req.params.id} ORDER BY timestamp;`
   );
   res.send(response[0]);
 });
+
+// app.get()
 
 //Server start
 const PORT = process.env.PORT;
