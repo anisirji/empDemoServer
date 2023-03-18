@@ -170,32 +170,34 @@ app.get("/today-attendance/:flag", async (req, res) => {
     const ontime = await runQuary(
       `SELECT COUNT(ID) AS ontime FROM txn_geolocation WHERE flag_value = 'PUNCH-IN' AND DATE_FORMAT(timestamp, "%Y-%m-%d") = CURRENT_DATE() AND DATE_FORMAT(timestamp, "%H:%i:%S") <= "17:00:00";`
     );
+    const onleave = await runQuary(
+      `SELECT COUNT(id) FROM txn_leave_application WHERE CURRENT_DATE() BETWEEN from_date AND to_date AND STATUS = 'ACCEPTED';`
+    );
     res.send({
       present: present[0][0]["total_attendance"],
       total: total[0][0]["COUNT(id)"],
       delayed: delayed[0][0]["delayed_"],
       ontime: ontime[0][0]["ontime"],
+      onleave: onleave[0][0]["COUNT(id)"],
       notyet: total[0][0]["COUNT(id)"] - present[0][0]["total_attendance"],
     });
   }
 });
 
-app.get("/attendance/:flag", async (req, res) => {
-  if (flag) {
-    if (req.params.flag == "delayed") {
-      const response = await runQuary(
-        `SELECT COUNT(ID) AS delayed_ FROM txn_geolocation WHERE flag_value = 'PUNCH-IN' AND DATE_FORMAT(timestamp, "%Y-%m-%d") = CURRENT_DATE() AND DATE_FORMAT(timestamp, "%H:%i:%S") > "17:00:00";`
-      );
-      res.send(response[0][0]);
-    } else if (req.params.flag == "ontime") {
-      const response = await runQuary(
-        `SELECT COUNT(ID) AS ontime FROM txn_geolocation WHERE flag_value = 'PUNCH-IN' AND DATE_FORMAT(timestamp, "%Y-%m-%d") = CURRENT_DATE() AND DATE_FORMAT(timestamp, "%H:%i:%S") <= "17:00:00";`
-      );
-      res.send(response[0][0]);
-    } else {
-      res.send("invalid request");
-    }
-  }
+app.get("/today-attendance-list", async (req, res) => {
+  const response = await runQuary(
+    `SELECT A.employee_id, B.employee_name FROM txn_geolocation AS A JOIN data_employee AS B ON A.employee_id = B.id WHERE flag_value = 'PUNCH-IN' AND DATE_FORMAT(timestamp, "%Y-%m-%d") = CURRENT_DATE();`
+  );
+  res.send({
+    data: response[0].length ? response[0] : "no record found",
+  });
+});
+
+app.get("/live-location", async (req, res) => {
+  const response = await runQuary(
+    `SELECT A.employee_id, B.employee_name, DATE_FORMAT(A.timestamp, '%d-%m-%Y %h:%i%S %p') AS timestamp_, A.latitude, A.longitude,A.flag_value FROM txn_geolocation AS A JOIN data_employee AS B ON A.employee_id = B.id WHERE DATE_FORMAT(timestamp, "%Y-%m-%d") = CURRENT_DATE() ORDER BY timestamp;`
+  );
+  res.send(response[0]);
 });
 
 //Server start
