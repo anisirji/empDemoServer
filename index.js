@@ -106,7 +106,7 @@ app.get("/getPunchInRequest/:status", async (req, res) => {
   console.log(response);
   res.send(response);
 });
-
+-0;
 app.get("/getPunchInRequest/:id", async (req, res) => {
   const response = await getSinglePunchInRequest({ id: req.params.id });
   console.log(response);
@@ -148,6 +148,54 @@ app.get("/tAction/:employee_id", async (req, res) => {
     flag: true,
     data: response,
   });
+});
+
+app.get("/today-attendance/:flag", async (req, res) => {
+  const flag = req.params.flag.toUpperCase();
+  if (flag != "ALL") {
+    const response = await runQuary(
+      `SELECT COUNT(id) AS total_attendance FROM txn_geolocation WHERE flag_value = '${flag}' AND DATE_FORMAT(timestamp, "%Y-%m-%d") = CURRENT_DATE();`
+    );
+    res.send(response[0][0]);
+  } else {
+    const present = await runQuary(
+      `SELECT COUNT(id) AS total_attendance FROM txn_geolocation WHERE flag_value = 'PUNCH-IN' AND DATE_FORMAT(timestamp, "%Y-%m-%d") = CURRENT_DATE();`
+    );
+    const total = await runQuary(
+      `SELECT COUNT(id) FROM data_employee WHERE active = 'YES'`
+    );
+    const delayed = await runQuary(
+      `SELECT COUNT(ID) AS delayed_ FROM txn_geolocation WHERE flag_value = 'PUNCH-IN' AND DATE_FORMAT(timestamp, "%Y-%m-%d") = CURRENT_DATE() AND DATE_FORMAT(timestamp, "%H:%i:%S") > "17:00:00";`
+    );
+    const ontime = await runQuary(
+      `SELECT COUNT(ID) AS ontime FROM txn_geolocation WHERE flag_value = 'PUNCH-IN' AND DATE_FORMAT(timestamp, "%Y-%m-%d") = CURRENT_DATE() AND DATE_FORMAT(timestamp, "%H:%i:%S") <= "17:00:00";`
+    );
+    res.send({
+      present: present[0][0]["total_attendance"],
+      total: total[0][0]["COUNT(id)"],
+      delayed: delayed[0][0]["delayed_"],
+      ontime: ontime[0][0]["ontime"],
+      notyet: total[0][0]["COUNT(id)"] - present[0][0]["total_attendance"],
+    });
+  }
+});
+
+app.get("/attendance/:flag", async (req, res) => {
+  if (flag) {
+    if (req.params.flag == "delayed") {
+      const response = await runQuary(
+        `SELECT COUNT(ID) AS delayed_ FROM txn_geolocation WHERE flag_value = 'PUNCH-IN' AND DATE_FORMAT(timestamp, "%Y-%m-%d") = CURRENT_DATE() AND DATE_FORMAT(timestamp, "%H:%i:%S") > "17:00:00";`
+      );
+      res.send(response[0][0]);
+    } else if (req.params.flag == "ontime") {
+      const response = await runQuary(
+        `SELECT COUNT(ID) AS ontime FROM txn_geolocation WHERE flag_value = 'PUNCH-IN' AND DATE_FORMAT(timestamp, "%Y-%m-%d") = CURRENT_DATE() AND DATE_FORMAT(timestamp, "%H:%i:%S") <= "17:00:00";`
+      );
+      res.send(response[0][0]);
+    } else {
+      res.send("invalid request");
+    }
+  }
 });
 
 //Server start
